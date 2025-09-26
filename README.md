@@ -1,6 +1,8 @@
 # Repo Miner (RM)
+(RM1)  a data-collection pipeline that gathers GitHub commits,
+normalizes them, and emit CSVs.
+Creates a CSV with columns sha, author, email, date (ISO-8601), message (first line)
 
-Warm-up (RM0) for a data-collection pipeline that will gather GitHub commits & issues,
-normalize them, and emit CSVs.
 
-
+## How to run -
+python -m src.repo_miner fetch-commits --repo owner/repo [--max (number)] --out commits.csv
