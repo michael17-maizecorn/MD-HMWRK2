@@ -5,6 +5,8 @@ import pandas as pd
 import pytest
 from datetime import datetime, timedelta
 from src.repo_miner import fetch_commits
+from src.repo_miner import fetch_issues
+import re
 
 # --- Helpers for dummy GitHub API objects ---
 
@@ -111,3 +113,53 @@ def test_fetch_commits_empty(monkeypatch):
     assert isinstance(df, pd.DataFrame)
     assert df.empty
     assert list(df.columns) == ["sha", "author", "email", "date", "message"]
+
+def test_fetch_issues_iso(monkeypatch):
+    now = datetime.now()
+    issues = [
+        DummyIssue(1, 101, "Issue A", "alice", "open", now, None, 0),
+        DummyIssue(2, 102, "Issue B", "bob", "closed", now - timedelta(days=2), now, 2)
+    ]
+    gh_instance._repo = DummyRepo([], issues)
+    df = fetch_issues("any/repo", state="all")
+    assert {"id", "number", "title", "user", "state", "created_at", "closed_at", "comments"}.issubset(df.columns)
+    assert len(df) == 2
+    # Check date normalization
+    iso = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
+
+    #(open issue): created_at is ISO closed_at is None
+    r0 = df.iloc[0]
+    assert isinstance(r0["created_at"], str) and iso.match(r0["created_at"])
+    assert r0["closed_at"] is None
+
+    #(closed issue): both created_at and closed_at are ISO strings
+    r1 = df.iloc[1]
+    assert isinstance(r1["created_at"], str) and iso.match(r1["created_at"])
+    assert isinstance(r1["closed_at"], str) and iso.match(r1["closed_at"])
+
+
+def test_fetch_issues_excludes_prs(monkeypatch):
+    now = datetime.now()
+    issues = [
+        DummyIssue(1, 101, "Real issue", "alice", "open", now, None, 0, is_pr=False),
+        DummyIssue(2, 102, "This is a PR", "bob", "open", now, None, 2, is_pr=True),
+    ]
+
+    gh_instance._repo = DummyRepo([], issues)
+    df = fetch_issues("any/repo", state="all")
+    # PR is excluded
+    assert set(df["title"]) == {"Real issue"}
+    assert {"id","number","title","user","state","created_at","closed_at","comments","open_duration_days"}.issubset(df.columns)
+
+
+def test_fetch_issues_duration_calculate(monkeypatch):
+    created = datetime(2025, 9, 20, 12, 0, 0)
+    closed = datetime(2025, 9, 22, 9, 0, 0)  # ~1 day 21h later
+    issues = [DummyIssue(10, 210, "Closed", "michael", "closed", created, closed, 3, is_pr=False)]
+    gh_instance._repo = DummyRepo([], issues)
+    df = fetch_issues("any/repo", state="closed")
+
+    row = df.iloc[0]
+    assert row["open_duration_days"] == 1
+
+
