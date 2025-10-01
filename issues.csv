@@ -1,0 +1,6 @@
+id,number,title,user,state,created_at,closed_at,comments,open_duration_days
+3473194887,4363,Test from Tenant B POC,pruthvis,closed,2025-10-01T11:38:18+00:00,2025-10-01T11:42:37+00:00,0,0.0
+3473194329,4362,Test from Tenant A POC,cyberlynxs-max,closed,2025-10-01T11:38:10+00:00,2025-10-01T11:42:26+00:00,0,0.0
+3471525875,4361,The Hate U Gave,moniquenhenry86,closed,2025-10-01T00:30:38+00:00,2025-10-01T00:34:00+00:00,2,0.0
+3471515873,4360,New Beginnings,moniquenhenry86,open,2025-10-01T00:27:16+00:00,,0,
+3461806780,4357,[DRAFT] Feat: Création de compte utilisateur,dust-agent[bot],open,2025-09-28T12:55:26+00:00,,0,
