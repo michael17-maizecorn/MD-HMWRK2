@@ -33,6 +33,20 @@ def merge_and_summarize(commits_df: pd.DataFrame, issues_df: pd.DataFrame) -> No
     issues['created_at'] = pd.to_datetime(issues['created_at'], errors='coerce')
     issues['closed_at']  = pd.to_datetime(issues['closed_at'], errors='coerce')
 
+    # 2) Top 5 committers
+    top = (
+        commits
+        .dropna(subset=['author'])  # Exclude commits without an author
+        .groupby('author', dropna=False)  # Group by author
+        .size()  # Count commits per author
+        .reset_index(name='count')  # Convert to DataFrame
+        .sort_values(['count', 'author'], ascending=[False, True])  # Sort by count desc, author asc
+        .head(5)  # Take top 5
+    )
+    print("Top 5 committers:")
+    for _, row in top.iterrows():
+        print(f"  {row['author']}: {row['count']} commits")
+
 
 
 
