@@ -198,5 +198,12 @@ def main():
         df.to_csv(args.out, index=False)
         print(f"Saved {len(df)} issues to {args.out}")
 
+    elif args.command == "summarize":
+        # Read CSVs into DataFrames
+        commits_df = pd.read_csv(args.commits)
+        issues_df = pd.read_csv(args.issues)
+        # Generate and print the summary
+        merge_and_summarize(commits_df, issues_df)
+
 if __name__ == "__main__":
     main()
