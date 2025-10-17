@@ -180,6 +180,11 @@ def main():
                     help="Max number of issues to fetch")
     c2.add_argument("--out", required=True, help="Path to output issues CSV")
 
+    # Sub-command: summarize
+    c3 = subparsers.add_parser("summarize", help="Summarize commits and issues")
+    c3.add_argument("--commits", required=True, help="Path to commits CSV file")
+    c3.add_argument("--issues", required=True, help="Path to issues CSV file")
+
     args = parser.parse_args()
 
     # Dispatch based on selected command
