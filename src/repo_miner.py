@@ -53,7 +53,14 @@ def merge_and_summarize(commits_df: pd.DataFrame, issues_df: pd.DataFrame) -> No
     close_rate = (closed_issues / total_issues) if total_issues else 0.0
     print(f"Issue close rate: {close_rate:.2f}")
 
-
+    # 4) Compute average open duration (days) for closed issues
+    closed = issues["closed_at"].notna() & issues["created_at"].notna()
+    durations = (issues.loc[closed, "closed_at"] - issues.loc[closed, "created_at"]).dt.total_seconds() / 86400.0
+    if not durations.empty:
+        avg_days = durations.mean()
+        print(f"Avg. issue open duration: {avg_days:.2f} days")
+    else:
+        print("Avg. issue open duration: N/A")
 
 
 
