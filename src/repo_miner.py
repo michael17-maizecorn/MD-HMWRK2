@@ -47,6 +47,14 @@ def merge_and_summarize(commits_df: pd.DataFrame, issues_df: pd.DataFrame) -> No
     for _, row in top.iterrows():
         print(f"  {row['author']}: {row['count']} commits")
 
+    # 3) Calculate issue close rate
+    total_issues = len(issues)
+    closed_issues = (issues["state"].str.lower() == "closed").sum() if "state" in issues else 0
+    close_rate = (closed_issues / total_issues) if total_issues else 0.0
+    print(f"Issue close rate: {close_rate:.2f}")
+
+
+
 
 
 
